@@ -28,7 +28,7 @@ export function CreateList() {
 			<div className="card-header">
 				<h1 className="card-title text-secondary">TODO</h1>
 			</div>
-			<div className="card-body px-0">
+			<div className="card-body pt-0 px-0">
 				<input
 					className="w-100 border p-3 m-0 font-weight-light text-secondary display-5"
 					type="text"
