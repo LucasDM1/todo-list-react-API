@@ -1,26 +1,75 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export function CreateList() {
 	const [input, setInput] = useState("");
-	const [Task, setTask] = useState([]);
-	const [count, setCount] = useState(0);
+	const [task, setTask] = useState([]);
+	const [count, setCount] = useState(1);
+
+	useEffect(() => {
+		fetch("https://assets.breatheco.de/apis/fake/todos/user/DavidLM", {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json"
+			}
+		})
+			.then(respond => {
+				return respond.json();
+			})
+			.then(data => {
+				setTask(task.concat(data));
+			});
+	}, []);
 
 	const handleSubmit = () => {
 		if (input != "") {
-			let newArray = [...Task, input];
+			let newArray = [...task, { label: input, done: false }];
 			setTask(newArray);
 
 			setInput("");
 
 			setCount(count + 1);
 		}
+		actualizar();
+	};
+
+	const actualizar = () => {
+		//console.log("ACTUALIZAR");
+		fetch("https://assets.breatheco.de/apis/fake/todos/user/DavidLM", {
+			method: "PUT",
+			body: JSON.stringify(task),
+			headers: {
+				"Content-Type": "application/json"
+			}
+		})
+			.then(resp => {
+				console.log(resp.ok); // will be true if the response is successfull
+				console.log(resp.status); // the status code = 200 or code = 400 etc.
+				console.log(resp.text()); // will try return the exact result as string
+				return resp; // (returns promise) will try to parse the result as json as return a promise that you can .then for results
+			})
+			.then(data => {
+				//here is were your code should start after the fetch finishes
+				console.log("data ", data); //this will print on the console the exact object received from the server
+			})
+			.catch(error => {
+				//error handling
+				console.log(error);
+			});
 	};
 
 	const DeleteInput = index => {
-		Task.splice(index, 1);
-		setTask([...Task]);
+		task.splice(index, 1);
+		setTask([...task]);
 
 		setCount(count - 1);
+
+		actualizar();
+	};
+
+	const KillemAll = () => {
+		let emptyArray = [];
+		setTask(emptyArray);
+		setCount(0);
 	};
 
 	return (
@@ -37,16 +86,22 @@ export function CreateList() {
 					onKeyPress={e => (e.key === "Enter" ? handleSubmit() : "")}
 					value={input}
 				/>
-				{Task.map((Element, i) => (
+				{task.map((Element, i) => (
 					<h5
 						className="card-text border w-100 mb-0 p-3 font-weight-light text-secondary text-capitalize"
 						id={i}
 						onClick={e => DeleteInput(e.target.id)}
 						key={i}>
 						{" "}
-						{Element}
+						{Element.label}
 					</h5>
 				))}
+				<button
+					type="button"
+					className="btn btn-secondary w-100 rounded-0"
+					onClick={() => KillemAll()}>
+					Eliminate all tasks
+				</button>
 
 				<div className="pt-3 pl-3 pb-0 text-muted">
 					<small> {count} item left</small>
