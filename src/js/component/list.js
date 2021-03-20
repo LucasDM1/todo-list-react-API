@@ -70,6 +70,20 @@ export function CreateList() {
 		let emptyArray = [];
 		setTask(emptyArray);
 		setCount(0);
+
+		fetch("https://assets.breatheco.de/apis/fake/todos/user/DavidLM", {
+			headers: {
+				"Content-Type": "application/json"
+			},
+			method: "POST",
+			body: JSON.stringify({ label: task, done: false })
+		})
+			.then(function(res) {
+				console.log(res);
+			})
+			.catch(function(res) {
+				console.log(res);
+			});
 	};
 
 	return (
